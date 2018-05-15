@@ -134,11 +134,15 @@ End of assembler dump.
 
 ## Exploit
 
-A first read of ASM code allows us to see that `verify_user_name` compare the user name to `dat_wil` and the password to `admin`. However, when you try `admin` as password it doesn't work.
+A first read of ASM code allows us to see that function `verify_user_name` compares the user name to `dat_wil` and
+function `verify_user_pass` compares password to `admin`. However, when you try with `admin` it doesn't work.
 
-But, looking closely to the code tell us that finding the password won't do anytrhing for us! It doesn't call any `system` function for example. Thus, we have to use our own solutions.
+Looking closely to the code tell us that finding the password won't help us! It doesn't call any `system` function for
+example. Thus, we have to provide our shellcode.
 
-After several tests, we can find that the password field segfault with an offset of `80`. In order to store our shellcode, we can use environment variable. We have all the keys to exploit this level, let's go!
+After several tests, we can find that the password field segfault with an offset of `80` (thanks to this
+[website](http://projects.jason-rush.com/tools/buffer-overflow-eip-offset-string-generator/)). In order to store our
+shellcode, we can use environment variables. We have all the keys to exploit this level, let's go!
 
 First, add the shellcode to environment variables:
 
@@ -157,7 +161,8 @@ Thanks to `gdb` we can find its address:
 [...]
 ```
 
-Here we have `0xffffd87e` but it could be different. Let's add `20` to this address to and into the nop sled: `0xffffd892`.
+Here we have `0xffffd87e` but it could be different. Let's add `20` to this address to and into the nop sled:
+`0xffffd892`.
 
 And execute the exploit with:
 
