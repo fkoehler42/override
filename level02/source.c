@@ -32,8 +32,10 @@ int			main(int argc, char **argv) {
 	puts("\\**************************************/");
 	
 	printf("--[ Username:");
+	fgets(buf_user, 100, stdin);
 	*(buf_user + strcspn(buf_user, "\n")) = '\0';
 	printf("--[ Password:");
+	fgets(buf_pass, 100, stdin);
 	*(buf_pass + strcspn(buf_pass, "\n")) = '\0';
 	puts("*****************************************");
 

