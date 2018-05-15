@@ -11,6 +11,8 @@ RELRO           STACK CANARY      NX            PIE             RPATH      RUNPA
 Partial RELRO   No canary found   NX disabled   No PIE          No RPATH   No RUNPATH   ./level01
 ```
 
+
+
 ## Exploit
 
 Here everything concerning the exploit description.
