@@ -3,12 +3,15 @@
 #include <stdlib.h>
 
 int			main(int argc, char **argv) {
-	char	buf_file[42];
 	FILE	*fs;
 	size_t	nbytes;
 	char	buf_user[100];
+	char	buf_file[42];
 	char	buf_pass[100];
 
+	memset(buf_user, '\0', 12);
+	memset(buf_file, '\0', 5);
+	memset(buf_pass, '\0', 12);
 	fs = fopen("/home/users/level03/.pass", "r");
 	if (fs == NULL) {
 		fwrite("ERROR: failed to open password file\n", 1, 36, stderr);

