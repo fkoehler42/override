@@ -34,12 +34,16 @@ $> strace executable                    # trace system calls and signals
 $> ltrace executable                    # trace library functions
 ```
 
-## Software:
+## Softwares and websites:
 
-- [Hopper](https://www.hopperapp.com/)
-- [radare 2](https://github.com/radare/radare2)
+- Softwares:
+    - [Hopper](https://www.hopperapp.com/)
+    - [radare 2](https://github.com/radare/radare2) - The best!
+- Websites:
+    - [Online desassembler](https://onlinedisassembler.com/odaweb/) - Like radare2 but online.
+    - [Online decompiler](https://retdec.com/decompilation/) - Useful for less than 10 Mb files.
 
-### radare2
+## radare2
 
 ```console
 $> r2 executable
@@ -81,16 +85,16 @@ to display disassembler code. You can enter visual mode with:
 [0x004004d0]> VV
 ```
 
-You can use Radare2 to debug a program. To do so use:
+In `VV` mode:
+
+- Use `TAB` and `Shift + TAB` to switch between blocks.
+- When you have a block selected, move it thanks to `Shift + [hjkl]`.
+- `p` is used to cycle between different representations.
+
+
+You can use Radare2 to debug a program. To do so, use:
 
 ```
 $> r2 -d executable
 ```
 
-### VV 
-
-Use `TAB` and `Shift + TAB` to switch between blocks.
-
-When you have a block selected, move it thanks to `Shift + [hjkl]`.
-
-`p` is used to cycle between different representations.
