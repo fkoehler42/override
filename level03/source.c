@@ -6,7 +6,7 @@
 void		decrypt(int mask) {
 	int				str = 0x757c7d51;	// "Q}|u"
 	int				str2 = 0x67667360;	// "`sfg"
-	int				str3 = 0x7b66737e;	// "~sfg"
+	int				str3 = 0x7b66737e;	// "~sf{"
 	int				str4 = 0x33617c7d;	// "}|a3"
 	char			c = 0;
 	unsigned int	str_len = strlen((char*)&str);
@@ -25,8 +25,6 @@ void		decrypt(int mask) {
 }
 
 void		test(int password, int value) {
-	int		test_value;
-
 	switch (value - password) {
 		case 1: {
 			decrypt(1);
