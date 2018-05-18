@@ -7,13 +7,13 @@
 
 If you look at `source.c`, it might look little bit frightening. In fact the program is doing 5 things:
 
-1 - It takes one input: an integer;
-2 - This integer is subtracted to `0x1337d00d` (or decimal `322424845`);
-3 - Then we have a switch cases with the subtraction result, cases are: `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, 
+1. It takes one input: an integer;
+2. This integer is subtracted to `0x1337d00d` (or decimal `322424845`);
+3. Then we have a switch cases with the subtraction result, cases are: `1`, `2`, `3`, `4`, `5`, `6`, `7`, `8`, `9`, 
 `16`, `17`, `18`, `19`, `20`, `21` - each cases are calling `decrypt` with `1`, `2`, `3`, and so on;
-4 - `decrypt` do `XOR` operation on each characters of the string ``"Q}|u`sfg~sf{}|a3"`` with the substraction result we 
+4. `decrypt` do `XOR` operation on each characters of the string ``"Q}|u`sfg~sf{}|a3"`` with the substraction result we 
 get earlier;
-5 - Finally it compares the new string with `"Congratulations!"`, if it matches: win!
+5. Finally it compares the new string with `"Congratulations!"`, if it matches: win!
 
 ## Exploit
 
