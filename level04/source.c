@@ -5,17 +5,19 @@
 #include <stdio.h>
 #include <sys/prctl.h>
 
-int         main(int argc, char **argv)
+int         main(void)
 {
-    int     pid = fork();
-    char    str[32];
-    int     stat_loc = 0;
+    int     pid = fork();                                       // esp+0xac
+    char    str[32];                                            // esp+0x20
 
     memset(str, '\0', 32);
+    int     ptrace_ret = 0;                                     // esp+0xa8
+    int     stat_loc = 0;                                       // esp+0x1c
+
     if (pid == 0)
     {
         prctl(1, 1);
-        ptrace(PTRACE_TRACEME, 0, NULL, NULL);
+        ptrace(0, 0, NULL, NULL);                               // PTRACE_TRACEME
         puts("Give me some shellcode, k");
         gets(str);
     }
@@ -28,9 +30,10 @@ int         main(int argc, char **argv)
                     puts("child is exiting...");
                     return (0);
                 }
+                ptrace_ret = ptrace(3, pid, 44, NULL)           // PTRACE_PEEKUSER
+                if (ptrace_ret == 11)                           // exec() syscall
+                    break ;
             }
-            if (ptrace(PTRACE_PEEKUSER, pid, 0x2c, NULL) == 11) // exec syscall
-                break ;
         }
         puts("no exec() for you");
         kill(pid, SIGKILL);
