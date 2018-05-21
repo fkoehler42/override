@@ -2,6 +2,7 @@
 
 ## Ressources
 
+- 🇬🇧 [Github book about hacking](https://trailofbits.github.io/ctf/)
 - 🇬🇧 [Some useful online tools](https://defuse.ca/) - [This](https://defuse.ca/online-x86-assembler.htm) can help you
   create shellcode.
 - 🇬🇧 [Buffer Overflow EIP Offset String
