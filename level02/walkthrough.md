@@ -169,11 +169,17 @@ Dump of assembler code for function main:
 End of assembler dump.
 ```
 
-Basically, this program opens the `.pass` file that contains the flag we look for, put its content to a buffer declared on stack, gets a username and a password from the standard input, then spawn a shell if the password entered by the user is equal to the `.pass` file content.
+Basically, this program opens the `.pass` file that contains the flag we look for, put its content to a buffer declared
+on stack, gets a username and a password from the standard input, then spawn a shell if the password entered by the user
+is equal to the `.pass` file content.
 
-The first clue we get from this is that the flag is stored in a buffer on the stack, so maybe we can find a way to read this buffer.
+The first clue we get from this is that the flag is stored in a buffer on the stack, so maybe we can find a way to read
+this buffer.
 
-Here, the vulnerability comes from `printf` which is called at the end of the program, when the password provided is different from the one of `.pass`, and only takes one argument, the username coming from the standard input. We will use a python script ('Ressources' folder attached) to dump the stack thanks to a format string attack. By doing so, we hope to reach the buffer used to read the content of the `.pass` file. Let's try this !
+Here, the vulnerability comes from `printf` which is called at the end of the program, when the password provided is
+different from the one of `.pass`, and only takes one argument, the username coming from the standard input. We will use
+a python script ('Ressources' folder attached) to dump the stack thanks to a format string attack. By doing so, we hope
+to reach the buffer used to read the content of the `.pass` file. Let's try this !
 
 ## Exploit
 
@@ -218,7 +224,9 @@ level02@OverRide:~$ cat /tmp/level02_dump
 [...]
 ```
 
-We take a look at the dumping file and notice a 5 blocks raw wich seems to contain ascii characters (22th to 26th argument). Once again we use python in order to convert the values from hexadecimal to ascii and reverse the bytes of each block, according to the binary endianness.
+We take a look at the dumping file and notice a 5 blocks raw wich seems to contain ascii characters (22th to 26th
+argument). Once again we use python in order to convert the values from hexadecimal to ascii and reverse the bytes of
+each block, according to the binary endianness.
 
 ```python
 >>> "756e505234376848".decode("hex")[::-1]

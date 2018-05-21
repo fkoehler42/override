@@ -49,7 +49,8 @@ Dump of assembler code for function main:
 End of assembler dump.
 ```
 
-The first level is pretty easy, the program calls `scanf` to get an integer from the standard input, then spawn a shell thanks to `system` if the value is equal to `0x149c`, 5276 in decimal.
+The first level is pretty easy, the program calls `scanf` to get an integer from the standard input, then spawn a shell
+thanks to `system` if the value is equal to `0x149c`, 5276 in decimal.
 
 ## Exploit
 
