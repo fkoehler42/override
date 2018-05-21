@@ -4,13 +4,14 @@
 #include <sys/ptrace.h>
 
 int     auth(char *login, unsigned int serial) {
-    unsigned int    check;
-    int             i;
+    int     len;
+    int     check;
+    int     i;
 
 
     *(login + strcspn(login, "\n")) = '\0';
-    serial = strnlen(login, 32);
-    if (serial <= 5)
+    len = strnlen(login, 32);
+    if (len <= 5)
         return (1);
     if (ptrace(0, 0, 1, NULL) == -1) {
         puts("\033[32m.---------------------------.");
@@ -18,14 +19,19 @@ int     auth(char *login, unsigned int serial) {
         puts("\033[32m'---------------------------'");
         return (1);
     }
-    check = (unsigned int)login[3] ^ 4919 + 6221293;
+    check = login[3] ^ 4919 + 6221293;
     i = 0;
-    while (i < serial) {
+    while (i < len) {
         if (login[i] <= 31)
             return (1);
-    //    2284010283 * login[i] ^ check
+        int check2 = login[i] ^ check;
+        int check3 = 2284010283 * check2;
+        int check4 = check2 + -1337 * ((check2 - check3) / 2 + check3) / 1024 + check;
+        check = check4;
         i++;
     }
+    if (check != serial)
+        return (1);
     return (0);
 }
 
