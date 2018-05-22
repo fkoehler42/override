@@ -39,6 +39,7 @@ $> ltrace executable                    # trace library functions
 - Softwares:
     - [Hopper](https://www.hopperapp.com/)
     - [radare 2](https://github.com/radare/radare2) - The best!
+    - [pwntools](https://github.com/Gallopsled/pwntools) - CTF framework and exploit development library.
 - Websites:
     - [Online desassembler](https://onlinedisassembler.com/odaweb/) - Like radare2 but online.
     - [Online decompiler](https://retdec.com/decompilation/) - Useful for less than 10 Mb files.
