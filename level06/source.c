@@ -25,8 +25,8 @@ int     auth(char *login, unsigned int serial) {
         if (login[i] <= 31)
             return (1);
         int check2 = login[i] ^ check;
-        int check3 = 2284010283 * check2;
-        int check4 = check2 + -1337 * ((check2 - check3) / 2 + check3) / 1024 + check;
+        int check3 = (int)((int64_t)0x88233b2b * check2 / 0x100000000);
+        int check4 = check2 * ((check2 - check3) / 2 + check3) / 1024 * -1337 + check;
         check = check4;
         i++;
     }
