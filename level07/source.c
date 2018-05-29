@@ -11,7 +11,10 @@ void        clear_argv(char **argv)
     }
 }
 
-void        clear_envp(char **envp) { clear_argv(envp); }
+void        clear_envp(char **envp)
+{
+    clear_argv(envp);
+}
 
 void        clear_stdin(void)
 {

@@ -5,16 +5,25 @@
 
 ## Analysis
 
-Basically, this program is a number storage service. `main` declares an array of a hundred unsigned integers that the user can handle via differents commands read from the standard input :
-- `read` calls an associated function `read_number` that asks for an index of the array to look at and prints the value stored at this address.
-- `store` calls `store_number` that first asks the user for a value to store, then for an index where to put it. A condition prevents us to store any value every 3 indexes (0, 3, 6...).
+Basically, this program is a number storage service. `main` declares an array of a hundred unsigned integers that the
+user can handle via differents commands read from the standard input :
+
+- `read` calls an associated function `read_number` that asks for an index of the array to look at and prints the value
+  stored at this address.
+- `store` calls `store_number` that first asks the user for a value to store, then for an index where to put it. A
+  condition prevents us to store any value every 3 indexes (0, 3, 6...).
 - `quit` obviously exits the program.
 
-The first vulnerability we notice is that the index is never checked by any functions. The input is read by `scanf` which interprets it as an unsigned integer, then used as it is to move through the array.
+The first vulnerability we notice is that the index is never checked by any functions. The input is read by `scanf`
+which interprets it as an unsigned integer, then used as it is to move through the array.
 
-We expect to use this lack of security to read/write almost everywhere on the stack, especially at the return address of `main` in order to redirect the execution flow. Our idea is to inject some shellcode, as we did many times in previous levels, but we are confronted to some difficulties here.
+We expect to use this lack of security to read/write almost everywhere on the stack, especially at the return address of
+`main` in order to redirect the execution flow. Our idea is to inject some shellcode, as we did many times in previous
+levels, but we are confronted to some difficulties here.
 
-At the beginning of the execution, the program deletes any argument and environment variable that could have been supplied, so we cannot store our shellcode this way. Therefore, the only area available from our knowledge is the array used to store numbers, but we need to find a way to bypass the restriction of the forbidden indexes.
+At the beginning of the execution, the program deletes any argument and environment variable that could have been
+supplied, so we cannot store our shellcode this way. Therefore, the only area available from our knowledge is the array
+used to store numbers, but we need to find a way to bypass the restriction of the forbidden indexes.
 
 Let's take a look at the function `store_number` to understand how it handles the index values we send.
 
@@ -33,9 +42,12 @@ Dump of assembler code for function store_number:
     [...]
 ```
 
-The shift operation here is very interesting. It will transform the index we provide to get the effective offset (in byte) where to store the value. Basically, if we want to store a value at the 2nd cell of our unsigned integers array, we need to move to `array address + (2 * 4)` since an integer is 4-byte long. Pretty obvious in fact.
+The shift operation here is very interesting. It will transform the index we provide to get the effective offset (in
+byte) where to store the value. Basically, if we want to store a value at the 2nd cell of our unsigned integers array,
+we need to move to `array address + (2 * 4)` since an integer is 4-byte long. Pretty obvious in fact.
 
-By mixing this information with the use of an integer overflow, we will be able to write at the forbidden indexes. Sweet !
+By mixing this information with the use of an integer overflow, we will be able to write at the forbidden indexes.
+Sweet!
 
 ## Exploit
 
@@ -82,10 +94,15 @@ Now that we have both saved EIP and array addresses, we can find the offset with
 114                             ## array index representation
 ```
 
-Guess what ? `114 % 3 = 0` so 114 is part of the forbidden indexes. Hopefully it is not a problem anymore :-)
-From here, we have tried to perform the exploit, and have failed because the array address `0xffffd544` that we have stored at the EIP address to jump in was bad. Why ? because GDB alter the stack size by adding / changing environment variables.
+Guess what? `114 % 3 = 0` so 114 is part of the forbidden indexes. Hopefully it is not a problem anymore. 😁
 
-Looking for a way to get the array address when running the program in an "regular" environment, we found out that we could use a negative index to dump lower stack addresses than the array one. We use gdb once again to find the offset between the array and its address pushed on stack when `read_number` is called.
+From here, we have tried to perform the exploit, and have failed because the array address `0xffffd544` that we have
+stored at the EIP address to jump in was bad. Why? Because GDB alter the stack size by adding/changing environment
+variables.
+
+Looking for a way to get the array address when running the program in an "regular" environment, we found out that we
+could use a negative index to dump lower stack addresses than the array one. We use gdb once again to find the offset
+between the array and its address pushed on stack when `read_number` is called.
 
 ```gdb
 gdb-peda$ b *0x80486da                              ## beginning of <read_number>
@@ -107,9 +124,11 @@ gdb-peda$ x $ebp+8
 
 Good, we will read the index `-9` in order to get the right array address to inject at the `main` return address.
 
-We have almost everything we need now. We use a tiny shellcode (21 bytes), split it in 4-byte parts and reverse the bytes order in each part, according to the endianness. We will use the 6th first indexes of the array to store this shellcode. Let's compute the values needed, then start the exploit.
+We have almost everything we need now. We use a tiny shellcode (21 bytes long), split it in 4-byte parts and reverse the
+bytes order in each part, according to the endianness. We will use the 6th first indexes of the array to store this
+shellcode. Let's compute the values needed, then start the exploit.
 
-execve("/bin/sh") shellcode : `"\x6a\x0b\x58\x99\x52\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\xcd\x80"`
+`execve("/bin/sh")` shellcode: `"\x6a\x0b\x58\x99\x52\x68\x2f\x2f\x73\x68\x68\x2f\x62\x69\x6e\x89\xe3\x31\xc9\xcd\x80"`.
 
 ```python
 # Shellcode values
