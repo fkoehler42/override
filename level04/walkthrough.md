@@ -15,7 +15,7 @@ Basically, this program declares a buffer of 32 bytes, then calls `fork` to crea
   process, especially looking for an `exec` call. If it catchs one, it kills the process and returns.
 
 From here, we know that we have to design a shellcode that does not use any call to `exec`, and obviously find a way to
-call it. The use of `gets` inside the child process seems to be a good entrypoint for a buffer overflow attack.
+jump to it. The use of `gets` inside the child process seems to be a good entrypoint for a buffer overflow attack.
 
 ## Exploit
 
