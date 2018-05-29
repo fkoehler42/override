@@ -36,8 +36,8 @@ int     auth(char *login, unsigned int serial) {
 }
 
 int     main(void) {
-    char            login[32];                      // 0x2c
-    unsigned int    serial;                         // 0x28
+    char            login[32];
+    unsigned int    serial;
 
     puts("***********************************");
     puts("*\t\tlevel06\t\t  *");
