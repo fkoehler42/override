@@ -10,7 +10,7 @@ RELRO           STACK CANARY      NX            PIE             RPATH      RUNPA
 Full RELRO      Canary found      NX disabled   No PIE          No RPATH   No RUNPATH   /home/users/level08/level08
 ```
 
-The program take one argument: a file name. It opens the `./backups/.log` and the file pointed by the only argument. It
+The program takes one argument: a file name. It opens `./backups/.log` and the file pointed by the only argument. It
 copies char by char the content of the argument into a new file in `./backups/` and close everything.
 
 ## Exploit
