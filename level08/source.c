@@ -10,7 +10,7 @@ void        log_wrapper(FILE *logf, char *msg, char *filename)
 {
     char log_buf[255];
     strcpy(log_buf, msg);
-    snprintf(log_buf + strlen(log_buf), 255 - strlen(log_buf) - 1 /*NULL*/, filename);
+    snprintf(log_buf + strlen(log_buf), 255 - strlen(log_buf) - 1, filename);
     log_buf[strcspn(log_buf, "\n")] = '\0';
     fprintf(logf, "LOG: %s\n", log_buf);
 }
@@ -38,7 +38,7 @@ int         main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
     strcpy(dest_buf, "./backups/");
-    strncat(dest_buf, argv[1], 100 - strlen(dest_buf) - 1 /*NULL*/);
+    strncat(dest_buf, argv[1], 100 - strlen(dest_buf) - 1);
     target = open(dest_buf, O_CREAT | O_EXCL | O_WRONLY, S_IRUSR | S_IWUSR | S_IRGRP | S_IWGRP);
     if (target < 0)
     {
