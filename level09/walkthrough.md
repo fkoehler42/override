@@ -119,7 +119,7 @@ Non-debugging symbols:
 0x000055555555488c  secret_backdoor
 ```
 
-From here we have everything we need to perform the exploit. Let's generate our final string, composed of three parts :
+From here we have everything we need to perform the exploit. Let's generate our final string, composed of three parts:
 
 - In first, we copy the same string as the previous one we have used to fill the first `fgets` call and overwrite
   `msglen` value, but we may change this value to match exactly the needed size, 200 + 8 bytes (for the address itself),
