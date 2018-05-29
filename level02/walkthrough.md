@@ -177,8 +177,8 @@ The first clue we get from this is that the flag is stored in a buffer on the st
 this buffer.
 
 Here, the vulnerability comes from `printf` which is called at the end of the program, when the password provided is
-different from the one of `.pass`, and only takes one argument, the username coming from the standard input. We will use
-a python script ('Ressources' folder attached) to dump the stack thanks to a format string attack. By doing so, we hope
+different from the one of `.pass`, and only takes one argument, the username acquired from the standard input. We will use
+a python script ('Resources' folder attached) to dump the stack thanks to a format string attack. By doing so, we hope
 to reach the buffer used to read the content of the `.pass` file. Let's try this !
 
 ## Exploit
