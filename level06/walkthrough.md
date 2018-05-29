@@ -116,3 +116,8 @@ Authenticated!
 $ cat /home/users/level07/.pass
 GbcPDRgsFK77LNnnuh7QyFYA2942Gp8yKj9KrWD8
 ```
+
+## Keygen solution
+
+There is another way to solve it by reverse engineering the binary and create a keygen. You can find in
+`Resources/serialkeygen.py` a script that generate the good serial for a given login.
