@@ -140,7 +140,7 @@ function `verify_user_pass` compares password to `admin`. However, when you try 
 Looking closely to the code tell us that finding the password won't help us! It doesn't call any `system` function for
 example. Thus, we have to provide our shellcode.
 
-After several tests, we can find that the password field segfault with an offset of `80` (thanks to this
+After several tests, we can find that we reach the EIP with an offset of `80` (thanks to this
 [website](http://projects.jason-rush.com/tools/buffer-overflow-eip-offset-string-generator/)). In order to store our
 shellcode, we can use environment variables. We have all the keys to exploit this level, let's go!
 
@@ -161,7 +161,7 @@ Thanks to `gdb` we can find its address:
 [...]
 ```
 
-Here we have `0xffffd87e` but it could be different. Let's add `20` to this address to and into the nop sled:
+Here we have `0xffffd87e` but it could be different. Let's add `20` to this address to jump into the nop sled:
 `0xffffd892`.
 
 And execute the exploit with:
