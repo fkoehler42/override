@@ -3,8 +3,8 @@
 #include <stdio.h>
 
 int         main(void) {
-    unsigned int    i = 0;          // esp+0x8c
-    char            buf[100];       // esp+0x28
+    unsigned int    i = 0;
+    char            buf[100];
 
     fgets(buf, 100, stdin);
     i = 0;

@@ -11,21 +11,21 @@ RELRO           STACK CANARY      NX            PIE             RPATH      RUNPA
 Partial RELRO   Canary found      NX enabled    No PIE          No RPATH   No RUNPATH   ./level06
 ```
 
-First of all, we see that the binary is protected against code execution on stack, so it does not matter if we find a way to inject some code or to redirect the execution flow to any instructions stored on the stack.
+First of all, we see that the binary is protected against code execution on stack, so it does not matter if we find a way to inject some code or to redirect the execution flow to any instruction stored on the stack.
 
-From our analysis of the disassembled code, here is what the program does :
+From our analysis of the disassembled code, here is how the program works :
 
-- The `main` function calls `fgets` to get an input string of 32 bytes max (login) and `scanf` to get an unsigned integer (serial). Then, it sends these values to a function `auth`, and expect its return value to be `0` in order to spawn a shell thanks to `system`.
+- The `main` function calls `fgets` to get an input string `login` of 32 bytes max and `scanf` to get an unsigned integer `serial`. Then, it sends these values to a function `auth`, and expect it to return `0` in order to spawn a shell thanks to `system`.
 
-- The `auth` function first replaces the trailing `\n` of login string with a `\0` and store its length on the stack. If that length is above 6 characters, the function returns `1` and the program quits immediately.
+- The `auth` function first replaces the trailing `\n` of `login` with a `\0` and store its length on the stack. If that length is below 6 characters, the function returns `1` and the program exits immediately.
 
-- An anti-debugging protection is present; actually it is a call to `ptrace` which returns `-1` when executed in a debugger, so we will jump the set of associated instructions to follow the execution flow inside GDB.
+- An anti-debugging protection is present; actually there is a call to `ptrace` that returns `-1` when executed in a debugger, so we will jump the set of associated instructions to follow the execution flow inside GDB.
 
-- Then come the serialization steps : an initial 'check' value is set, depending on the third character of login and two constants. This value is used in a `while` loop, iterating on the login string, that performs some operations to generate a new check value. We also notice that we must use only printable characters to fill the login, since a test is done for each one. At the end of the loop, the final value is compared to 'serial' and if they are equal the function returns `0` so the `main` calls `system` function.
+- Then come the serialization steps : an initial `check` value is set, depending on the third character of `login` and two constants. This value is used in a `while` loop, iterating on the `login` string, that performs some operations to generate a new `check` value. We also notice that we must use only printable characters to fill the login, since a test is done for each one. At the end of the loop, the final value is compared to `serial` and if they are equal the function returns `0` so the `main` calls `system`.
 
 ## Exploit
 
-Our first approach is to run the executable in GDB, to send a simple string of six 'A' to `fgets` and go through the differents steps until we reach the final comparison. This way we will be able to get the serial value expected.
+Our first approach is to run the executable in GDB, to send a simple string of six 'A' to `fgets` and go through the differents steps until we reach the final comparison. This way we will be able to get the `serial` value expected.
 
 We set two breakpoints; the first one to jump over the checking of the return value from `ptrace` call , and the second one to get the final value expected.
 
@@ -100,7 +100,7 @@ gdb-peda$ x $ebp-0x10
 0xffffd698:	0x005f0c3a
 ```
 
-Here we are ! the value expected for the login string "AAAAAA" is `0x005f0c3a` or `6229050` in decimal. Let's run the executable again (out of GDB) and provide it the right value.
+Here we are ! the value expected for the `login` string `"AAAAAA"` is `0x005f0c3a` or `6229050` in decimal. Let's run the executable again (out of GDB) and provide it the right value.
 
 ```console
 level06@OverRide:~$ ./level06
