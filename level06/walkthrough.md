@@ -2,6 +2,7 @@
 
 1. [Analysis](#analysis)
 2. [Exploit](#exploit)
+3. [Keygen](#keygen-solution)
 
 ## Analysis
 
