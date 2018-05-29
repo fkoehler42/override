@@ -10,7 +10,10 @@ int     verify_user_name(void)
     return strncmp(username, "dat_wil", 7);
 }
 
-int     verify_user_pass(char *password) { return strncmp(password, "admin", 5); }
+int     verify_user_pass(char *password)
+{
+    return strncmp(password, "admin", 5);
+}
 
 int     main()
 {
@@ -34,8 +37,8 @@ int     main()
     verify = verify_user_pass(password);
     if (verify == 0 || verify != 0)
     {
-            puts("nope, incorrect password...\n");
-            return (1);
+        puts("nope, incorrect password...\n");
+        return (1);
     }
     return (0);
 }
